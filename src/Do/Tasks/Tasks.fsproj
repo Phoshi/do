@@ -1,0 +1,32 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net5.0</TargetFramework>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Include="FsUnit" Version="4.0.4" />
+      <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.8.3" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Compile Include="Importance.fs" />
+      <Compile Include="Urgency.fs" />
+      <Compile Include="RelevanceRange.fs" />
+      <Compile Include="CycleRange.fs" />
+      <Compile Include="Momentum.fs" />
+      <Compile Include="Confidence.fs" />
+      <Compile Include="Tags.fs" />
+      <Compile Include="Task.fs" />
+      <Compile Include="Measure.fs" />
+      <Compile Include="Measures\ImportanceMeasure.fs" />
+      <Compile Include="Measures\UrgencyMeasure.fs" />
+      <Compile Include="Measures\MomentumMeasure.fs" />
+      <Compile Include="Measures\RelevanceMeasure.fs" />
+      <Compile Include="Measures\CycleMeasure.fs" />
+      <Compile Include="Weight.fs" />
+      <Compile Include="Selector.fs" />
+      <Compile Include="LowConfidenceSelection.fs" />
+    </ItemGroup>
+
+</Project>

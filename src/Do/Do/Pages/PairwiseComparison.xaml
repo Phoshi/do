@@ -1,0 +1,33 @@
+﻿<PageFunction x:Class="Do.Pages.PairwiseComparison"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      xmlns:local="clr-namespace:Do.Pages"
+      xmlns:viewModels="clr-namespace:Do.ViewModels"
+      xmlns:controls="clr-namespace:Do.Controls"
+      x:TypeArguments="local:PairwiseComparisonResponse"
+      mc:Ignorable="d"
+      Title="PairwiseComparison"
+      Unloaded="PairwiseComparison_OnUnloaded"
+      Background="White">
+    <Grid Background="CornflowerBlue" d:DataContext="{d:DesignInstance viewModels:PairwiseComparisonViewModel}">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="30"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="30"/>
+        </Grid.RowDefinitions>
+        
+        <TextBlock Grid.ColumnSpan="2" Grid.Column="0" Grid.Row="0" Text="{Binding ComparisonDescription}"/>
+        <controls:TaskControl Background="Pink" Grid.Column="0" Grid.Row="1" Task="{Binding Task}"/>
+        <controls:TaskControl Background="Purple" Grid.Column="1" Grid.Row="1" Task="{Binding ComparisonTask}"/>
+        
+        <Button Grid.Column="0" Grid.Row="2" Click="Left_OnClick">Left</Button>
+        <Button Grid.Column="1" Grid.Row="2" Click="Right_OnClick">Right</Button>
+        
+    </Grid>
+</PageFunction>

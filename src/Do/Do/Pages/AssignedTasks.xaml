@@ -1,0 +1,32 @@
+﻿<PageFunction x:Class="Do.AssignedTasks"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      xmlns:local="clr-namespace:Do"
+      xmlns:controls="clr-namespace:Do.Controls"
+      xmlns:commands="clr-namespace:Do.Commands"
+      mc:Ignorable="d"
+      x:TypeArguments="local:AssignmentReturn"
+      Title="AssignedTasks" 
+      Background="White">
+    <Page.CommandBindings>
+        <CommandBinding Command="commands:TaskCommands.DoneCommand" Executed="CommandBinding_OnExecuted"/>
+    </Page.CommandBindings>
+    <StackPanel>
+        <TextBlock Text="Do the thing, kitty"/>
+        <ListView ItemsSource="{Binding Tasks}">
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <StackPanel>
+                        <controls:TaskControl Task="{Binding}"/>
+                        <Button 
+                            Command="commands:TaskCommands.DoneCommand"
+                            CommandParameter="{Binding}"
+                            >I have done this thing</Button>
+                    </StackPanel>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+    </StackPanel>
+</PageFunction>

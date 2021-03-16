@@ -1,0 +1,46 @@
+﻿<PageFunction x:Class="Do.Pages.CycleRangeAcquisition"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      xmlns:local="clr-namespace:Do.Pages"
+      xmlns:controls="clr-namespace:Do.Controls"
+      xmlns:viewModels="clr-namespace:Do.ViewModels"
+      x:TypeArguments="local:CycleRangeAcquisitionReturn"
+      mc:Ignorable="d"
+      Title="RelevanceRangeAcquisition"
+      Loaded="CycleRangeAcquisition_OnLoaded"
+      Background="White">
+    <Grid d:DataContext="{d:DesignInstance viewModels:RelevanceRangeAcquisitionViewModel}">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="25"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="25"/>
+            <RowDefinition Height="35"/>
+            <RowDefinition Height="25"/>
+        </Grid.RowDefinitions>
+        <TextBlock Grid.ColumnSpan="3" Text="How regularly do we need to do this task?"/>
+        
+        <controls:TaskControl Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" Task="{Binding Task}"/>
+        
+        <TextBlock Grid.Row="2" Grid.Column="0" Text="After" Name="_after"/>
+        <TextBlock Grid.Row="2" Grid.Column="2" Text="Before" Name="_before"/>
+        
+        <TextBox 
+            Grid.Row="3"
+            Grid.Column="0" 
+            Text="{Binding Start}"/>
+        <TextBox 
+            Grid.Row="3" 
+            Grid.Column="2" 
+            Text="{Binding End}"/>
+        
+        <Button Margin="0 5 0 0" Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="3" Click="ButtonBase_OnClick">Done</Button>
+        
+    </Grid>
+</PageFunction>

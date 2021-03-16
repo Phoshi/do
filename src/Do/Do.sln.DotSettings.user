@@ -1,0 +1,28 @@
+﻿<wpf:ResourceDictionary xml:space="preserve" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:s="clr-namespace:System;assembly=mscorlib" xmlns:ss="urn:shemas-jetbrains-com:settings-storage-xaml" xmlns:wpf="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+	<s:String x:Key="/Default/CodeInspection/Highlighting/SweaWarningsMode/@EntryValue">DoNotShowAndRun</s:String>
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=7d20253f_002Dc47e_002D4e53_002Db35e_002D3df0afaf61be/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="really" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
+  &lt;TestAncestor&gt;&#xD;
+    &lt;TestId&gt;NUnit3x::5AE7941A-275E-44C0-B9F3-E3A8494041F3::net5.0::Tasks.Measure+Tests+Given a function which tends towards forcing the measurement&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;NUnit3x::5AE7941A-275E-44C0-B9F3-E3A8494041F3::net5.0::Tasks.Measures.RelevanceMeasure+Tests+Given a relevance range.When we are before the range, then the measure is suppressive&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;NUnit3x::5AE7941A-275E-44C0-B9F3-E3A8494041F3::net5.0::Tasks.Measures.RelevanceMeasure+Tests+Given a relevance range&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;NUnit3x::5AE7941A-275E-44C0-B9F3-E3A8494041F3::net5.0::Tasks.Measures.CycleMeasure+Tests+Given a relevance range&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;NUnit3x::5AE7941A-275E-44C0-B9F3-E3A8494041F3::net5.0::Tasks.Weight+Tests+Given a series of weights&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;NUnit3x::5AE7941A-275E-44C0-B9F3-E3A8494041F3::net5.0::Tasks.Weight+Tests+Given a series of measures&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;NUnit3x::5AE7941A-275E-44C0-B9F3-E3A8494041F3::net5.0::Tasks.Selector+Tests+Given a series of weighted tasks&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;NUnit3x::5AE7941A-275E-44C0-B9F3-E3A8494041F3::net5.0::Tasks.Measures.CycleMeasure+Tests+Given a cycle range&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;NUnit3x::D7AF55A8-865C-416C-A61D-CA6D48B9B8F7::net5.0::MarkdownSource.GivenAMarkdownTask.SimpleTasksParse&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;NUnit3x::D7AF55A8-865C-416C-A61D-CA6D48B9B8F7::net5.0::MarkdownSource.GivenAMarkdownTask.ComplexTasksParse&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;NUnit3x::D7AF55A8-865C-416C-A61D-CA6D48B9B8F7::net5.0::MarkdownSource.GivenAnUpdatedTask.ThePresentValuesAreWrittenToFrontmatter&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;NUnit3x::5AE7941A-275E-44C0-B9F3-E3A8494041F3::net5.0::Tasks.Measures.MomentumMeasure+Tests+Given a task with a certain momentum.When it was set recently it is respected&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;NUnit3x::5AE7941A-275E-44C0-B9F3-E3A8494041F3::net5.0::Tasks.Measures.MomentumMeasure+Tests+Given a task with a certain momentum&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;NUnit3x::5AE7941A-275E-44C0-B9F3-E3A8494041F3::net5.0::Tasks.LowConfidenceSelection+Tests+Given a low confidence task.There are no comparators if it is the only task&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;NUnit3x::5AE7941A-275E-44C0-B9F3-E3A8494041F3::net5.0::Tasks.LowConfidenceSelection+Tests+Given a low confidence task.If we don't know the confidence lower bound, then we pick the lowest item&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;NUnit3x::5AE7941A-275E-44C0-B9F3-E3A8494041F3::net5.0::Tasks.LowConfidenceSelection+Tests+Given a low confidence task.If we know the lower, but not upper, bound, then we pick the highest item&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;NUnit3x::5AE7941A-275E-44C0-B9F3-E3A8494041F3::net5.0::Tasks.LowConfidenceSelection+Tests+Given a low confidence task&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;NUnit3x::5AE7941A-275E-44C0-B9F3-E3A8494041F3::net5.0::Tasks.CycleRange+Tests+Given a cycle time&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;NUnit3x::5AE7941A-275E-44C0-B9F3-E3A8494041F3::net5.0::Tasks.CycleRange+Tests+Given a stringified cycle time.if it is simple, it parses to the correct value&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;NUnit3x::5AE7941A-275E-44C0-B9F3-E3A8494041F3::net5.0::Tasks.CycleRange+Tests+Given a stringified cycle time.if it has many pieces, it parses to the correct value&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;NUnit3x::D7AF55A8-865C-416C-A61D-CA6D48B9B8F7::net5.0::MarkdownSource.GivenAMarkdownTask.TasksWithCyclesParse&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;NUnit3x::D7AF55A8-865C-416C-A61D-CA6D48B9B8F7::net5.0::MarkdownSource.GivenAMarkdownTask.TasksWithBeforeCyclesParse&lt;/TestId&gt;&#xD;
+  &lt;/TestAncestor&gt;&#xD;
+&lt;/SessionState&gt;</s:String></wpf:ResourceDictionary>

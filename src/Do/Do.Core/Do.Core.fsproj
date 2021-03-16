@@ -1,0 +1,22 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net5.0</TargetFramework>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <Compile Include="ReviewSelection.fs" />
+      <Compile Include="Duty.fs" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Duties\Duties.fsproj" />
+      <ProjectReference Include="..\Tasks\Tasks.fsproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Optional" Version="4.0.0" />
+      <PackageReference Include="YamlDotNet" Version="9.1.4" />
+    </ItemGroup>
+
+</Project>

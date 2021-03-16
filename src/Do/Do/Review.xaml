@@ -1,0 +1,40 @@
+﻿<Window x:Class="Do.Review"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:commands="clr-namespace:Do.Commands"
+        mc:Ignorable="d"
+        Title="Review" Height="450" Width="800"
+        ResizeMode="CanMinimize"
+        WindowStyle="None"
+        AllowsTransparency="True"
+        Background="Transparent"
+        Loaded="Review_OnLoaded"
+        >
+    <Window.InputBindings>
+        <KeyBinding Command="{x:Static commands:UiCommands.LeftMajorCommand}" Key="S" Modifiers="Alt"/>
+        <KeyBinding Command="{x:Static commands:UiCommands.LeftMinorCommand}" Key="T" Modifiers="Alt"/>
+        <KeyBinding Command="{x:Static commands:UiCommands.RightMinorCommand}" Key="N" Modifiers="Alt"/>
+        <KeyBinding Command="{x:Static commands:UiCommands.RightMajorCommand}" Key="E" Modifiers="Alt"/>
+    </Window.InputBindings>
+    
+    <FrameworkElement.CommandBindings>
+        <CommandBinding 
+            Command="{x:Static commands:UiCommands.LeftMajorCommand}"
+            Executed="OnLeftMajor"/>
+        <CommandBinding 
+            Command="{x:Static commands:UiCommands.LeftMinorCommand}"
+            Executed="OnLeftMinor"/>
+        <CommandBinding 
+            Command="{x:Static commands:UiCommands.RightMinorCommand}"
+            Executed="OnRightMinor"/>
+        <CommandBinding 
+            Command="{x:Static commands:UiCommands.RightMajorCommand}"
+            Executed="OnRightMajor"/>
+    </FrameworkElement.CommandBindings>
+    <Frame 
+        Name="_main" 
+        NavigationUIVisibility="Hidden" 
+        />
+</Window>
