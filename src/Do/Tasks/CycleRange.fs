@@ -78,6 +78,51 @@ module CycleTime =
             (_t "day")
             (_t "hour")
             (_t "minute")
+            
+    type CycleTimeComparison =
+        | Before
+        | On
+        | After
+    let clampToPrecision (time: DateTime) (t: T) =
+        let clampWeek (time: DateTime) =
+            let dayOfWeek =
+                match time.DayOfWeek with
+                | DayOfWeek.Monday -> 0.0
+                | DayOfWeek.Tuesday -> 1.0
+                | DayOfWeek.Wednesday -> 2.0
+                | DayOfWeek.Thursday -> 3.0
+                | DayOfWeek.Friday -> 4.0
+                | DayOfWeek.Saturday -> 5.0
+                | DayOfWeek.Sunday -> 6.0
+            time.AddDays(-dayOfWeek)
+            
+        let _c value def conditions  =
+            if List.exists (fun c -> c > 0) conditions then value else def 
+        let lowPrecisionTime =
+            DateTime(
+                time.Year,
+                _c time.Month 1 [t.months; t.weeks; t.days; t.hours; t.minutes],
+                _c time.Day 1 [t.weeks; t.days; t.hours; t.minutes],
+                _c time.Hour 0 [t.hours; t.minutes],
+                _c time.Minute 0 [t.minutes],
+                0
+                )
+            
+        if t.weeks > 0 && t.days = 0 && t.hours = 0 && t.minutes = 0 then
+            clampWeek lowPrecisionTime
+        else lowPrecisionTime
+        
+    let compare (comparisonBase: DateTime) (comparisonOther: DateTime) (duration: T) =
+        let comparisonReference = clampToPrecision comparisonBase duration
+        let endOfPeriod = add duration comparisonReference
+        let comparisonSubject = clampToPrecision comparisonOther duration
+        
+        if comparisonReference <= comparisonSubject && comparisonSubject < endOfPeriod then
+            On
+        else if endOfPeriod <= comparisonSubject then
+            After
+        else
+            Before
         
 
 type T =
@@ -134,3 +179,78 @@ module Tests =
             "1 year, 2 months, 3 weeks, 4 days, 5 hours, 6 minutes"
             |> CycleTime.parse
             |> should equal (CycleTime.create 1 2 3 4 5 6)
+            
+    [<TestFixture>]
+    type ``Given two times and a range`` () =
+        let now = DateTime(2020, 5, 5, 12, 31, 56)
+        let ct = CycleTime.parse
+        
+        [<Test>]
+        member this.``If the supplied time is within the same precision as the reference time plus the range, the comparison is on`` () =
+            CycleTime.compare now (now.AddHours(2.0)) (ct "1 day")
+            |> should equal CycleTime.On
+            
+            CycleTime.compare now (now.AddHours(-2.0)) (ct "1 day")
+            |> should equal CycleTime.On
+            
+        [<Test>]
+        member this.``If the supplied time is after the reference time plus the range, the comparison is after`` () =
+            CycleTime.compare now (now.AddDays 2.0) (ct "1 day")
+            |> should equal CycleTime.After
+            
+        [<Test>]
+        member this.``If the supplied time is before the reference time plus the range, the comparison is before`` () =
+            CycleTime.compare now (now.AddDays -1.0) (ct "1 day")
+            |> should equal CycleTime.Before
+            
+        [<Test>]
+        member this.``If the supplied time is outside of the same precision as the reference time plus the range, the comparison is After`` () =
+            CycleTime.compare now (now.AddHours(12.0)) (ct "1 day")
+            |> should equal CycleTime.After
+            
+        [<Test>]
+        member this.``If the supplied time is before the same precision as the reference time plus the range, the comparison is Before`` () =
+            CycleTime.compare now (now.AddHours(-13.0)) (ct "1 day")
+            |> should equal CycleTime.Before
+            
+        [<Test>]
+        member this.``If the cycle time is large, then the precision lowers`` () =
+            CycleTime.compare now (now.AddDays(10.0)) (ct "1 month")
+            |> should equal CycleTime.On
+            
+            CycleTime.compare now (now.AddDays(-4.0)) (ct "1 month")
+            |> should equal CycleTime.On
+            
+            CycleTime.compare now (now.AddDays(-6.0)) (ct "1 month")
+            |> should equal CycleTime.Before
+            
+            CycleTime.compare now (now.AddDays(30.0)) (ct "1 month")
+            |> should equal CycleTime.After
+            
+        [<Test>]
+        member this.``If the cycle time is small, then the precision raises`` () =
+            CycleTime.compare now (now.AddMinutes(10.0)) (ct "1 hour")
+            |> should equal CycleTime.On
+            
+            CycleTime.compare now (now.AddMinutes(-4.0)) (ct "1 hour")
+            |> should equal CycleTime.On
+            
+            CycleTime.compare now (now.AddMinutes(-35.0)) (ct "1 hour")
+            |> should equal CycleTime.Before
+            
+            CycleTime.compare now (now.AddMinutes(30.0)) (ct "1 hour")
+            |> should equal CycleTime.After
+        [<Test>]
+        member this.``If the cycle time is measured in weeks, then the precision is also measured in weeks`` () =
+            //2020-05-05 was a tuesday
+            CycleTime.compare now (now.AddDays(3.0)) (ct "1 week")
+            |> should equal CycleTime.On
+            
+            CycleTime.compare now (now.AddDays(-1.0)) (ct "1 week")
+            |> should equal CycleTime.On
+            
+            CycleTime.compare now (now.AddDays(-3.0)) (ct "1 week")
+            |> should equal CycleTime.Before
+            
+            CycleTime.compare now (now.AddDays(6.0)) (ct "1 week")
+            |> should equal CycleTime.After

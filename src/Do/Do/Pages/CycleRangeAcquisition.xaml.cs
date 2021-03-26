@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Navigation;
 using Do.ViewModels;
 using Duties;
@@ -59,7 +60,26 @@ namespace Do.Pages
 
         private void CycleRangeAcquisition_OnLoaded(object sender, RoutedEventArgs e)
         {
-            _after.Focus();
+            _after.Dispatcher.BeginInvoke(new Action(() =>
+            {
+                var focussed = Keyboard.FocusedElement;
+                
+                Console.WriteLine(_after.Focusable);
+                Console.WriteLine(_after.IsFocused);
+                Console.WriteLine(_after.IsKeyboardFocused);
+                
+                Console.WriteLine(_after.Focus());
+                Keyboard.ClearFocus();
+                Keyboard.Focus(_after);
+                
+                Console.WriteLine(_after.Focusable);
+                Console.WriteLine(_after.IsFocused);
+                Console.WriteLine(_after.IsKeyboardFocused);
+                var focussed2 = Keyboard.FocusedElement;
+                
+                Console.WriteLine(_after.IsKeyboardFocused);
+                
+            }), System.Windows.Threading.DispatcherPriority.Render);
         }
     }
 

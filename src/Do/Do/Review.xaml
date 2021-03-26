@@ -11,6 +11,8 @@
         AllowsTransparency="True"
         Background="Transparent"
         Loaded="Review_OnLoaded"
+        FocusManager.IsFocusScope="False"
+        FocusManager.FocusedElement="{Binding ElementName=_main}"
         >
     <Window.InputBindings>
         <KeyBinding Command="{x:Static commands:UiCommands.LeftMajorCommand}" Key="S" Modifiers="Alt"/>
@@ -33,8 +35,26 @@
             Command="{x:Static commands:UiCommands.RightMajorCommand}"
             Executed="OnRightMajor"/>
     </FrameworkElement.CommandBindings>
-    <Frame 
-        Name="_main" 
-        NavigationUIVisibility="Hidden" 
-        />
+    
+    <Border
+        BorderBrush="#ECEFF4"
+        BorderThickness="1"
+        CornerRadius="30 0 0 0">
+        <Grid>
+            <Border 
+                Name="mask"
+                Background="#ECEFF4"
+                CornerRadius="30 0 0 0"
+            />
+            <Frame 
+                Name="_main" 
+                NavigationUIVisibility="Hidden" 
+                FocusManager.IsFocusScope="False"
+                >
+                <Frame.OpacityMask>
+                    <VisualBrush Visual="{Binding ElementName=mask}"/>
+                </Frame.OpacityMask>
+            </Frame>
+        </Grid>
+    </Border>
 </Window>

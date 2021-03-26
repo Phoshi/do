@@ -10,8 +10,16 @@
       mc:Ignorable="d"
       Title="RelevanceRangeAcquisition"
       Loaded="CycleRangeAcquisition_OnLoaded"
-      Background="White">
-    <Grid d:DataContext="{d:DesignInstance viewModels:RelevanceRangeAcquisitionViewModel}">
+      FocusManager.IsFocusScope="False"
+      Background="Transparent"
+      >
+    
+    <Grid 
+        d:DataContext="{d:DesignInstance viewModels:RelevanceRangeAcquisitionViewModel}"
+        Background="#ECEFF4"
+        Margin="20"
+        FocusManager.FocusedElement="{Binding ElementName=_after}"
+        >
         <Grid.ColumnDefinitions>
             <ColumnDefinition/>
             <ColumnDefinition/>

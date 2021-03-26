@@ -43,7 +43,10 @@ namespace Do.Pages
             {
                 if (required())
                 {
-                    NavigationService.Navigate(page());
+                    var pageInstance = page();
+                    NavigationService.Navigate(pageInstance);
+                    pageInstance.Focus();
+                    
                     return;
                 }
             }

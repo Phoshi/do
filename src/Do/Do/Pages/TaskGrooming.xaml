@@ -14,40 +14,25 @@
       Foreground="#2E3440"
       >
     
-    <Border
-        BorderBrush="#ECEFF4"
-        BorderThickness="1"
-        CornerRadius="30 0 0 0">
-        <Grid>
-            <Border 
-                Name="mask"
-                Background="#ECEFF4"
-                CornerRadius="30 0 0 0"
-            />
-            <Grid 
-                d:DataContext="{d:DesignInstance do:GroomingViewModel}"
-                Background="#ECEFF4"
-                >
-                <Grid.OpacityMask>
-                    <VisualBrush Visual="{Binding ElementName=mask}"/>
-                </Grid.OpacityMask>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition/>
-                    <ColumnDefinition/>
-                    <ColumnDefinition/>
-                </Grid.ColumnDefinitions>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="50"/>
-                    <RowDefinition Height="*"/>
-                </Grid.RowDefinitions>
-                
-                
-                <TextBlock Grid.Row="0" Grid.Column="0" TextAlignment="Center" Text="{Binding TaskQueueCount}"/>
-                <TextBlock Grid.Row="0" Grid.Column="1" TextAlignment="Center" Text="/"/>
-                <TextBlock Grid.Row="0" Grid.Column="2" TextAlignment="Center" Text="{Binding TaskCount}"/>
-                
-                <controls:TaskControl x:Name="TaskControl" Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="3" Task="{Binding CurrentTask}"/>
-            </Grid>
-        </Grid>
-    </Border>
+    <Grid 
+        d:DataContext="{d:DesignInstance do:GroomingViewModel}"
+        Background="#ECEFF4"
+        >
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="50"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        
+        
+        <TextBlock Grid.Row="0" Grid.Column="0" TextAlignment="Center" Text="{Binding TaskQueueCount}"/>
+        <TextBlock Grid.Row="0" Grid.Column="1" TextAlignment="Center" Text="/"/>
+        <TextBlock Grid.Row="0" Grid.Column="2" TextAlignment="Center" Text="{Binding TaskCount}"/>
+        
+        <controls:TaskControl x:Name="TaskControl" Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="3" Task="{Binding CurrentTask}"/>
+    </Grid>
 </PageFunction>

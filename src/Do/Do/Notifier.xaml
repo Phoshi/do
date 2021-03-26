@@ -6,7 +6,34 @@
         xmlns:local="clr-namespace:Do"
         WindowStyle="None"
         ShowInTaskbar="False"
+        AllowsTransparency="True"
+        Background="Transparent"
         mc:Ignorable="d"
-        Title="Notifier" Height="100" Width="100">
-        <Button Click="ButtonBase_OnClick">!!</Button>
+        ShowActivated="False"
+        ResizeMode="NoResize"
+        Title="Notifier" Height="100" Width="100"
+        Loaded="Notifier_OnLoaded">
+        <Grid>
+                <Border
+                        Name="mask"
+                        Background="#ECEFF4"
+                        CornerRadius="100 0 0 0"
+                        />
+                <Button 
+                        Name="Button" 
+                        Click="ButtonBase_OnClick" 
+                        BorderBrush="Transparent" 
+                        Background="#D8DEE9" 
+                        Foreground="#5E81AC" 
+                        FontWeight="Bold" 
+                        FontSize="18" 
+                        HorizontalContentAlignment="Right" 
+                        VerticalContentAlignment="Bottom"
+                        Padding="10">
+                        <Button.OpacityMask>
+                            <VisualBrush Visual="{Binding ElementName=mask}"/>
+                        </Button.OpacityMask>
+                        !!
+                </Button>
+        </Grid>
 </Window>

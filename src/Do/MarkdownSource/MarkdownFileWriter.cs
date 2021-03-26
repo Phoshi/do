@@ -98,9 +98,10 @@ namespace MarkdownSource
             var serialised = Writer.Write(task);
             
             Assert.That(serialised, Is.EqualTo(@"---
-relevant:
-  before: 2020-06-01T00:00:00.0000000
+repeat:
+  before: 7 days
 created: 2020-05-05T00:00:00.0000000
+lastUpdated: 2020-05-05T00:00:00.0000000
 
 ---
 

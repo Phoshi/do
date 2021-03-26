@@ -2,10 +2,12 @@
 
     <PropertyGroup>
         <TargetFramework>net5.0</TargetFramework>
+        <OutputType>Exe</OutputType>
     </PropertyGroup>
 
     <ItemGroup>
       <Compile Include="ReviewSelection.fs" />
+      <Compile Include="Alert.fs" />
       <Compile Include="Duty.fs" />
     </ItemGroup>
 

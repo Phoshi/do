@@ -6,6 +6,7 @@
       xmlns:local="clr-namespace:Do.Pages"
       xmlns:markdig="clr-namespace:Markdig.Wpf;assembly=Markdig.Wpf"
       xmlns:commands="clr-namespace:Do.Commands"
+      FocusManager.IsFocusScope="False"
       mc:Ignorable="d"
       Title="ReviewHost">
     <FrameworkElement.CommandBindings>

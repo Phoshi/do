@@ -31,6 +31,7 @@ namespace Do
     public partial class MainWindow : Window
     {
         private const int SHOW_REVIEW_ID = 1;
+        private Notifier _notifier;
 
         public MainWindow()
         {
@@ -107,6 +108,9 @@ namespace Do
 
             RegisterHotKey(new WindowInteropHelper(this).Handle, SHOW_REVIEW_ID, (int) (Modifiers.Ctrl | Modifiers.Alt),
                 0x44 /*D*/);
+
+            _notifier = new Notifier(Config.Active.ActiveDuties(), BeginReview);
+            _notifier.Notify();
 
             Visibility = Visibility.Hidden;
         }

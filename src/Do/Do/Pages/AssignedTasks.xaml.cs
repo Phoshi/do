@@ -28,9 +28,8 @@ namespace Do
         {
             var now = DateTime.Now;
             var task = e.Parameter as Task.T;
-            Context.Duty.api.complete(task, now);
             task = Task.setConfidence(Confidence.zero("assigned"), task);
-            Context.Duty.api.update(task, DateTime.Now);
+            Context.Duty.api.complete(task, now);
             
             Context.Tasks = Context.Tasks.Where(t => t.filepath != task.filepath);
             

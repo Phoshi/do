@@ -29,6 +29,7 @@ type API =
     abstract highConfidence: Confidence.T -> Task.T seq
     abstract review: unit -> Task.T seq
     abstract assignedTasks: Task.T seq -> Task.T seq
+    abstract alertState: DateTime -> Alert.T
     abstract comparisonValue: Task.T * string -> double
     abstract comparisonOperand: Task.T * string * Nullable<double> * Nullable<double> -> Option<Task.T>
     
@@ -81,6 +82,8 @@ let apiFor (duty: T) =
         member this.assignedTasks(tasks) =
             ReviewSelection.review (duty.dutyMeta.review.assignments) (tasks |> List.ofSeq)
             |> Seq.ofList
+        member this.alertState(now) =
+            Alert.alertLevel (ReviewSelection.measure ()) now (CycleRange.CycleTime.parse "1 day") [Confidence.full "relevance"; Confidence.full "importance"; Confidence.full "urgency"] (duty.tasks |> List.ofSeq)
         member this.comparisonValue(t, measure) =
             match measure with
             | "urgency" -> Urgency.value t.urgency

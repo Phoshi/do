@@ -21,7 +21,9 @@ namespace Do
             InitializeComponent();
             DataContext = this;
 
-            _main.Navigate(new ReviewHost(duty, this));
+            var page = new ReviewHost(duty, this);
+            _main.Navigate(page);
+            page.Focus();
         }
 
         private void Raise(Command name)

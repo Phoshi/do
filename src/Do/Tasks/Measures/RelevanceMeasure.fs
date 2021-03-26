@@ -5,30 +5,32 @@ open Tasks
 open Tasks.RelevanceRange
 
 let measure (now: DateTime) (task: Task.T) =
-    match task.relevanceRange with
-    | Always -> Measure.neutral
-    | After dt ->
-        if dt < now then
-            Measure.neutral
-        else
-            Measure.Suppress
-    | Before dt ->
-        let range =
-            (dt - task.created).Ticks |> double
-        let timeRemaining =
-            (dt - now).Ticks |> double
-        
-        Measure.tendTowardsForce range timeRemaining
-    | Between (lower, upper) ->
-        if (lower < now) then
+    if (List.isEmpty task.completed) then
+        match task.relevanceRange with
+        | Always -> Measure.neutral
+        | After dt ->
+            if dt < now then
+                Measure.neutral
+            else
+                Measure.Suppress
+        | Before dt ->
             let range =
-                (upper - lower).Ticks |> double
+                (dt - task.created).Ticks |> double
             let timeRemaining =
-                (upper - now).Ticks |> double
+                (dt - now).Ticks |> double
             
             Measure.tendTowardsForce range timeRemaining
-        else
-            Measure.Suppress
+        | Between (lower, upper) ->
+            if (lower < now) then
+                let range =
+                    (upper - lower).Ticks |> double
+                let timeRemaining =
+                    (upper - now).Ticks |> double
+                
+                Measure.tendTowardsForce range timeRemaining
+            else
+                Measure.Suppress
+    else Measure.neutral
     
 module Tests =
     open FsUnit
