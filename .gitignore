@@ -1,0 +1,13 @@
+.DS_Store
+.idea
+*.log
+tmp/
+
+.idea
+.ionide
+Do.sln.DotSettings.user
+bin/
+obj/
+
+miniTest/
+testDuty/
