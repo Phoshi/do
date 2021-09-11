@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System.Linq;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
 using Markdig;
@@ -37,6 +38,7 @@ namespace Do.Controls
             var doc = Markdown != null ? Markdig.Wpf.Markdown.ToFlowDocument(Markdown, DefaultPipeline) : null;
 
             Viewer.Document = doc;
+            Viewer.Visibility = doc.Blocks.Any() ? Visibility.Visible : Visibility.Collapsed;
         }
     }
 }

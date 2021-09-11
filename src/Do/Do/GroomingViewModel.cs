@@ -44,7 +44,7 @@ namespace Do
         }
 
         public int TaskCount => Tasks.Count();
-        public int TaskQueueCount => TaskQueue.Count();
+        public int TaskQueueCount => TaskQueue.Count() + 1;
 
         public Task.T CurrentTask
         {

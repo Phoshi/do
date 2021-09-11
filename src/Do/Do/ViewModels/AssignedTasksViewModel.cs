@@ -3,6 +3,8 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using Do.Annotations;
 using Duties;
+using Optional.Collections;
+using Optional.Unsafe;
 using Tasks;
 
 namespace Do.ViewModels
@@ -11,15 +13,13 @@ namespace Do.ViewModels
     {
         public event PropertyChangedEventHandler? PropertyChanged;
 
-        private Task.T _task;
         public Task.T CurrentTask
         {
-            get => _task;
-            set => PropertyChanged.ChangeAndNotify(ref _task, value, () => CurrentTask);
+            get => _tasks.FirstOrNone(t => t.Current).Else(_tasks.FirstOrNone()).ValueOrFailure().Task;
         }
 
-        private IEnumerable<Task.T> _tasks;
-        public IEnumerable<Task.T> Tasks
+        private IEnumerable<AssignedTask> _tasks;
+        public IEnumerable<AssignedTask> Tasks
         {
             get => _tasks;
             set => PropertyChanged.ChangeAndNotify(ref _tasks, value, () => Tasks);
@@ -38,4 +38,6 @@ namespace Do.ViewModels
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
+
+    public record AssignedTask(Task.T Task, bool Current);
 }

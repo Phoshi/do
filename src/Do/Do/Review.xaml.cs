@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -22,30 +23,21 @@ namespace Do
             DataContext = this;
 
             var page = new ReviewHost(duty, this);
-            _main.Navigate(page);
-            page.Focus();
+            _main.Content = page;
         }
-
-        private void Raise(Command name)
-        {
-            UiCommands.Raise(name);
-        }
-
-        private void OnLeftMajor(object sender, ExecutedRoutedEventArgs e) => Raise(Command.LeftMajor);
-
-        private void OnLeftMinor(object sender, ExecutedRoutedEventArgs e) => Raise(Command.LeftMinor);
-
-        private void OnRightMinor(object sender, ExecutedRoutedEventArgs e) => Raise(Command.RightMinor);
-
-        private void OnRightMajor(object sender, ExecutedRoutedEventArgs e) => Raise(Command.RightMajor);
 
         private void Review_OnLoaded(object sender, RoutedEventArgs e)
         {
-            var maxHeight = System.Windows.SystemParameters.PrimaryScreenHeight;
-            var maxWidth = System.Windows.SystemParameters.PrimaryScreenWidth;
+            var maxHeight = System.Windows.SystemParameters.WorkArea.Bottom;
+            var maxWidth = System.Windows.SystemParameters.WorkArea.Right;
 
-            Top = maxHeight - Height;
-            Left = maxWidth - Width;
+            Top = maxHeight - Height + 1;
+            Left = maxWidth - Width + 1;
+        }
+
+        private void Review_OnClosed(object? sender, EventArgs e)
+        {
+            MainWindow.BumpNotifier();
         }
     }
     

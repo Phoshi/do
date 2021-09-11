@@ -12,22 +12,23 @@ using Tasks;
 
 namespace Do.Pages
 {
-    public partial class ReviewHost : Page
+    public partial class ReviewHost : UserControl
     {
         private readonly Duty.T _duty;
         private readonly Review _hostingFor;
 
-        private readonly List<(Func<bool>, Func<Page>)> _pages;
+        private readonly List<(Func<bool>, Func<UserControl>)> _pages;
 
         public ReviewHost(Duty.T duty, Review hostingFor)
         {
-            _pages = new List<(Func<bool>, Func<Page>)>
+            _pages = new List<(Func<bool>, Func<UserControl>)>
             {
-                (HasAssignedTasks, AssignmentStep),
+                (ShouldAssignTasks, AssignTasks),
                 (NeedCycleAcquisition, CycleStep),
                 (NeedRelevanceAcquisition, RelevanceStep),
                 (NeedPairwiseComparison, PairwiseComparisonStep),
-                (() => true, GroomingStep)
+                (CanGroom, GroomingStep),
+                (HasAssignedTasks, AssignmentStep),
             };
             
             _duty = duty;
@@ -44,100 +45,103 @@ namespace Do.Pages
                 if (required())
                 {
                     var pageInstance = page();
-                    NavigationService.Navigate(pageInstance);
-                    pageInstance.Focus();
+                    if (pageInstance == null)
+                    {
+                        NextStep();
+                        return;
+                    }
+                    Content.Content = pageInstance;
                     
                     return;
                 }
             }
+            
+            _hostingFor.Close();
+        }
+
+        private bool ShouldAssignTasks()
+        {
+            return _duty.api.review().Any(t =>
+                _duty.api.weight(t, DateTime.Now).Item1.IsMaximum &&
+                LowConfidenceSelection.lowerConfidenceThan(Confidence.full("assigned"), t));
         }
         
         private bool HasAssignedTasks()
             => AssignedTasks().Any();
 
         private bool NeedCycleAcquisition()
-            => UnknownCycleTasks().Any();
+            => _cycled < 5 && UnknownCycleTasks().Any();
 
-        private Page CycleStep()
+        private int _cycled = 0;
+        private UserControl CycleStep()
         {
-            var step = new CycleRangeAcquisition(_duty, UnknownCycleTasks().First());
-            step.Return += CycleReturn;
+            _cycled++;
+            var step = new CycleRangeAcquisition(_duty, UnknownCycleTasks().First(), NextStep);
             return step;
-        }
-
-        private void CycleReturn(object sender, ReturnEventArgs<CycleRangeAcquisitionReturn> e)
-        {
-            NextStep();
         }
         
         private bool NeedRelevanceAcquisition()
             => UnknownRelevanceTasks().Any();
 
-        private Page RelevanceStep()
+        private UserControl AssignTasks()
         {
-            var step = new RelevanceRangeAcquisition(_duty, UnknownRelevanceTasks().First());
-            step.Return += RelevanceReturn;
+            var assignedTasks = _duty.api.assignedTasks(_duty.tasks);
+            foreach (var task in assignedTasks)
+            {
+                if (_duty.api.weight(task, DateTime.Now).Item1.IsMaximum)
+                {
+                    var t = Task.setConfidence(Confidence.full("assigned"), task);
+                    _duty.api.update(t, DateTime.Now);
+                }
+            }
+            return null;
+        }
+
+        private UserControl RelevanceStep()
+        {
+            var step = new RelevanceRangeAcquisition(_duty, UnknownRelevanceTasks().First(), NextStep);
             return step;
         }
 
-        private void RelevanceReturn(object sender, ReturnEventArgs<RelevanceRangeAcquisitionReturn> e)
+        private UserControl AssignmentStep()
         {
-            NextStep();
-        }
-        
-        private Page AssignmentStep()
-        {
-            var step = new AssignedTasks(_duty, AssignedTasks());
-            step.Return += AssignmentReturn;
+            var step = new AssignedTasks(_duty, AssignedTasks(), _hostingFor.Close);
             return step;
-        }
-
-        private void AssignmentReturn(object sender, ReturnEventArgs<AssignmentReturn> e)
-        {
-            _hostingFor.Close();
         }
 
         private bool NeedPairwiseComparison()
             => LowConfidenceTasks().Any();
 
-        private Page PairwiseComparisonStep()
+        private UserControl PairwiseComparisonStep()
         {
-            var step = new PairwiseComparison(_duty, LowConfidenceTasks());
-            step.Return += PairwiseResponse;
+            var step = new PairwiseComparison(_duty, LowConfidenceTasks(), NextStep);
             return step;
         }
 
-        private void PairwiseResponse(object sender, ReturnEventArgs<PairwiseComparisonResponse> e)
-        {
-            NextStep();
-        }
-
-        private Page GroomingStep()
+        private bool CanGroom()
+            => _duty.api.review().Any(t => !_duty.api.weight(t, DateTime.Now).Item1.IsMaximum);
+        private UserControl GroomingStep()
         {
             var review = _duty.api.review();
-            var step = new TaskGrooming(_duty, review);
-            step.Return += GroomingResponse;
+            var step = new TaskGrooming(_duty, review, NextStep);
             return step;
-        }
-
-        private void GroomingResponse(object sender, ReturnEventArgs<GroomingResponse> e)
-        {
-            NextStep();
         }
 
         private IEnumerable<Task.T> LowConfidenceTasks() =>
             _duty.api.lowConfidence(Confidence.create("importance", 1))
-                .Concat(_duty.api.lowConfidence(Confidence.create("urgency", 1)));
+                .Concat(_duty.api.lowConfidence(Confidence.create("urgency", 1)))
+                .Distinct();
 
         private IEnumerable<Task.T> AssignedTasks() =>
-            _duty.api.highConfidence(Confidence.create("assigned", 0));
+            _duty.api.highConfidence(Confidence.create("assigned", 0))
+                .OrderByDescending(t => _duty.api.weight(t, DateTime.Now));
 
         private IEnumerable<Task.T> UnknownRelevanceTasks() =>
             _duty.api.lowConfidence(Confidence.create("relevance", 1));
         
         private IEnumerable<Task.T> UnknownCycleTasks() =>
-            _duty.api.lowConfidence(Confidence.create("cycle", 1))
-                .Where(t => t.completed.Length > 0);
+            _duty.api.lowConfidence(Confidence.create("cycle", Double.PositiveInfinity))
+                .Where(t => t.completed.Length > Math.Pow(Confidence.confidenceLevel("cycle", t.confidence), 2));
 
 
         private void OpenHyperlink(object sender, ExecutedRoutedEventArgs e)
@@ -173,14 +177,6 @@ namespace Do.Pages
                 {
                     throw;
                 }
-            }
-        }
-
-        private void _host_OnNavigating(object sender, NavigatingCancelEventArgs e)
-        {
-            if (e.WebRequest != null)
-            {
-                e.Cancel = true;
             }
         }
     }

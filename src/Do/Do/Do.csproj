@@ -8,12 +8,12 @@
 
     <ItemGroup>
       <ProjectReference Include="..\Do.Core\Do.Core.fsproj" />
-      <ProjectReference Include="..\Duties\Duties.fsproj" />
       <ProjectReference Include="..\MarkdownSource\MarkdownSource.csproj" />
       <ProjectReference Include="..\Tasks\Tasks.fsproj" />
     </ItemGroup>
 
     <ItemGroup>
+      <PackageReference Include="Humanizer" Version="2.10.1" />
       <PackageReference Include="Markdig.Wpf" Version="0.5.0.1" />
       <PackageReference Include="Optional" Version="4.0.0" />
     </ItemGroup>

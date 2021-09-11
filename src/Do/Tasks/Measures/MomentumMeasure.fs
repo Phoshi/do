@@ -4,18 +4,20 @@ open System
 open Tasks
 open Tasks.Measure
 
+let name = "momentum"
+
 let measure (now: DateTime) (task: Task.T) =
     match task.momentum with
     | Momentum.Momentum n ->
         //y = 100 - (x^1.2) is about right for multiplier? The exponent controls the rate of decay
         let days = (now - task.lastUpdated).TotalDays
         let multiplier =
-            let rate = 100.0 - (Math.Pow(days, 1.2))
+            let rate = 100.0 - (Math.Pow(days, 1.8))
             if (rate < 0.0) then 0.0
             else rate / 100.0
         
         if n > 1.0 then
-            Measure.Measurement (1.0 + ((n - 1.0) * multiplier))
+            Measure.Measurement (Math.Pow(((1.0 + ((n - 1.0) * multiplier)), 0.7)))
         else 
             Measure.Measurement (1.0 - ((1.0 - n) * multiplier))
 

@@ -24,7 +24,12 @@
       <Compile Include="Measures\MomentumMeasure.fs" />
       <Compile Include="Measures\RelevanceMeasure.fs" />
       <Compile Include="Measures\CycleMeasure.fs" />
+      <Compile Include="Measures\AlwaysMeasure.fs" />
+      <Compile Include="Measures\BuryAfterCompletion.fs" />
+      <Compile Include="Measures\AgeMeasure.fs" />
+      <Compile Include="MeasureParser.fs" />
       <Compile Include="Weight.fs" />
+      <Compile Include="Scale.fs" />
       <Compile Include="Selector.fs" />
       <Compile Include="LowConfidenceSelection.fs" />
     </ItemGroup>

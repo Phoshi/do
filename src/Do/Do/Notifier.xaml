@@ -4,6 +4,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:local="clr-namespace:Do"
+        xmlns:viewModels="clr-namespace:Do.ViewModels"
         WindowStyle="None"
         ShowInTaskbar="False"
         AllowsTransparency="True"
@@ -11,29 +12,74 @@
         mc:Ignorable="d"
         ShowActivated="False"
         ResizeMode="NoResize"
-        Title="Notifier" Height="100" Width="100"
-        Loaded="Notifier_OnLoaded">
-        <Grid>
-                <Border
-                        Name="mask"
-                        Background="#ECEFF4"
-                        CornerRadius="100 0 0 0"
-                        />
+        Title="Notifier" 
+        Width="200"
+        Loaded="Notifier_OnLoaded"
+        d:DataContext="{d:DesignInstance viewModels:NotifierViewModel}">
+        <Window.Resources>
+                <Storyboard x:Key="KeepAttention" RepeatBehavior="Forever">
+                        <DoubleAnimation Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0.2" BeginTime="0:0:0.0" />
+                        <DoubleAnimation Storyboard.TargetProperty="Width" To="50" Duration="0:0:0.5" BeginTime="0:0:0.5" />
+                        
+                        <DoubleAnimation Storyboard.TargetProperty="Opacity" To="0.5" Duration="0:10:0" BeginTime="0:0:1.0" />
+                        <DoubleAnimation Storyboard.TargetProperty="Width" To="20" Duration="0:10:0" BeginTime="0:0:1.0" />
+                </Storyboard>
+                <Storyboard x:Key="Breathe" RepeatBehavior="Forever">
+                        <DoubleAnimation Storyboard.TargetProperty="Opacity" To="1" Duration="0:5:0" BeginTime="0:0:0.0" />
+                        
+                        <DoubleAnimation Storyboard.TargetProperty="Opacity" To="0.5" Duration="0:5:0" BeginTime="0:5:0" />
+                </Storyboard>
+                <Storyboard x:Key="LowerAttention">
+                        <DoubleAnimation Storyboard.TargetProperty="Opacity" To="0.5" Duration="0:0:0.2" BeginTime="0:0:0.4" />
+                        <DoubleAnimation Storyboard.TargetProperty="Width" To="20" Duration="0:0:0.4" BeginTime="0:0:0.0" />
+                </Storyboard>
+        </Window.Resources>
+        <Grid HorizontalAlignment="Right" Width="{Binding Width}"
+                Background="{Binding PrimaryColour}" 
+                Opacity="0.5"
+              >
                 <Button 
                         Name="Button" 
                         Click="ButtonBase_OnClick" 
                         BorderBrush="Transparent" 
-                        Background="#D8DEE9" 
-                        Foreground="#5E81AC" 
+                        Background="Transparent"
+                        Foreground="#2E3440" 
                         FontWeight="Bold" 
-                        FontSize="18" 
+                        FocusVisualStyle="{x:Null}"
+                        Opacity="1"
+                        FontSize="16" 
                         HorizontalContentAlignment="Right" 
                         VerticalContentAlignment="Bottom"
-                        Padding="10">
-                        <Button.OpacityMask>
-                            <VisualBrush Visual="{Binding ElementName=mask}"/>
-                        </Button.OpacityMask>
-                        !!
+                        Padding="0 0 10 0"
+                        Margin="0"
+                        Content="{Binding ButtonText}"
+                        >
+                        <Button.LayoutTransform>
+                                <RotateTransform Angle="90"/>
+                        </Button.LayoutTransform>
                 </Button>
+                <Grid.Style>
+                        <Style TargetType="Grid">
+                                <Style.Triggers>
+                                        <DataTrigger Binding="{Binding RequestAttention}" Value="True">
+                                                <DataTrigger.EnterActions>
+                                                        <BeginStoryboard Storyboard="{StaticResource KeepAttention}" Name="Keep"/>
+                                                </DataTrigger.EnterActions>
+                                                <DataTrigger.ExitActions>
+                                                        <BeginStoryboard Storyboard="{StaticResource LowerAttention}"/>
+                                                        <StopStoryboard BeginStoryboardName="Keep"/>
+                                                </DataTrigger.ExitActions>
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding RequestAttention}" Value="False">
+                                                <DataTrigger.EnterActions>
+                                                        <BeginStoryboard Storyboard="{StaticResource Breathe}" Name="Breathe"/>
+                                                </DataTrigger.EnterActions>
+                                                <DataTrigger.ExitActions>
+                                                        <StopStoryboard BeginStoryboardName="Breathe"/>
+                                                </DataTrigger.ExitActions>
+                                        </DataTrigger>
+                                </Style.Triggers>
+                        </Style>
+                </Grid.Style>
         </Grid>
 </Window>

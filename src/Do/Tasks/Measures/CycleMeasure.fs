@@ -4,6 +4,8 @@ open FsUnit
 open Tasks
 open CycleRange
 
+let name = "cycle"
+
 let measure (now: DateTime) (task: Task.T) =
     match task.completed with
     | [] -> Measure.neutral
@@ -15,30 +17,33 @@ let measure (now: DateTime) (task: Task.T) =
         match task.cycleRange with
         | Never -> Measure.Suppress
         | After dt ->
-            if (CycleTime.add dt completed) < now then
+            if CycleTime.compare completed now dt = CycleTime.After then
                 Measure.neutral
             else
                 Measure.Suppress
         | Before dt ->
+            let roundedCompleted = CycleTime.clampToPrecision completed dt
             let range =
                 (CycleTime.toTimeSpan now dt).Ticks |> double
             let timeRemaining =
-                ((((CycleTime.add dt completed) - now).Ticks |> double))
+                (((CycleTime.add dt roundedCompleted) - now).Ticks |> double)
             
             Measure.tendTowardsForce range timeRemaining
         | Between (lower, upper) ->
-            if (CycleTime.add lower completed < now) then
+            if CycleTime.compare completed now lower = CycleTime.After then
+                let roundedLower = CycleTime.clampToPrecision now lower
+                let roundedUpper = CycleTime.clampToPrecision now upper
+                let roundedCompleted = CycleTime.clampToPrecision completed upper
                 let range =
-                    ((CycleTime.toTimeSpan now upper) - (CycleTime.toTimeSpan now lower)).Ticks |> double
+                    ((CycleTime.toTimeSpan roundedLower upper) - (CycleTime.toTimeSpan roundedUpper lower)).Ticks |> double
                 let timeRemaining =
-                    (((CycleTime.add upper completed) - now).Ticks |> double)
+                    (((CycleTime.add upper roundedCompleted) - now).Ticks |> double)
                 
                 Measure.tendTowardsForce range timeRemaining
             else
                 Measure.Suppress
     
 module Tests =
-    open FsUnit
     open NUnit.Framework
     
     [<TestFixture>]
@@ -46,10 +51,61 @@ module Tests =
         let task = Task.Tests.newTask
         
         let dt y m d = DateTime(y, m, d)
+        let dtt y m d h M = DateTime(y, m, d, h, M, 0)
         let ts d = TimeSpan.FromDays(d |> float) |> CycleTime.fromTimeSpan
         
-        let now = dt 2020 5 5
+        let now = dt 2020 5 5 //a tuesday!
         
+        let measured m =
+            match m with
+            | Measure.Measurement n -> n
+            | _ -> 0.0
+        
+        [<Test>]
+        member x.``'After' ranges use relative-precision values`` () =
+            measure now (task |> Task.addCompleted (dtt 2020 5 4 12 53) |> Task.setCycleRange (After (ts 1)))
+            |> should equal Measure.neutral
+            
+            measure now (task |> Task.addCompleted (dtt 2020 5 1 12 53) |> Task.setCycleRange (After (CycleTime.parse "1 week")))
+            |> should equal Measure.neutral
+            
+            measure now (task |> Task.addCompleted (dtt 2020 5 4 12 53) |> Task.setCycleRange (After (CycleTime.parse "1 week")))
+            |> should equal Measure.Suppress
+            
+            measure now (task |> Task.addCompleted (dtt 2020 5 1 12 53) |> Task.setCycleRange (After (CycleTime.parse "1 month")))
+            |> should equal Measure.Suppress
+            
+            measure now (task |> Task.addCompleted (dtt 2020 4 29 12 53) |> Task.setCycleRange (After (CycleTime.parse "1 month")))
+            |> should equal Measure.neutral
+            
+        [<Test>]
+        member x.``'Before' ranges use relative-precision values`` () =
+            measure now (task |> Task.addCompleted (dtt 2020 5 4 12 53) |> Task.setCycleRange (Before (ts 1)))
+            |> should equal Measure.Force
+            
+            measure (dtt 2020 5 4 18 00) (task |> Task.addCompleted (dtt 2020 5 4 12 53) |> Task.setCycleRange (Before (ts 1)))
+            |> measured
+            |> should be (greaterThan 1.0)
+            
+            measure now (task |> Task.addCompleted (dtt 2020 5 4 12 53) |> Task.setCycleRange (Before (CycleTime.parse "1 month")))
+            |> measured
+            |> should be (greaterThan 1.0)
+            
+            measure (dt 2020 6 1) (task |> Task.addCompleted (dtt 2020 5 4 12 53) |> Task.setCycleRange (Before (CycleTime.parse "1 month")))
+            |> should equal Measure.Force
+            
+        [<Test>]
+        member x.``'Between' ranges use relative-precision values`` () =
+            measure (dtt 2020 5 3 18 00) (task |> Task.addCompleted (dtt 2020 5 3 12 53) |> Task.setCycleRange (Between (ts 1, ts 2)))
+            |> should equal Measure.Suppress
+            
+            measure (dtt 2020 5 4 18 00) (task |> Task.addCompleted (dtt 2020 5 3 12 53) |> Task.setCycleRange (Between (ts 1, ts 2)))
+            |> measured
+            |> should be (greaterThan 1.0)
+            
+            measure (dt 2020 5 5) (task |> Task.addCompleted (dtt 2020 5 3 12 53) |> Task.setCycleRange (Between (ts 1, ts 2)))
+            |> should equal Measure.Force
+            
         [<Test>]
         member x.``When there is no set range, the measure is neutral`` () =
             measure now task
@@ -105,5 +161,30 @@ module Tests =
             (two > one)
             |> should be True
             
+        [<Test>]
+        member x.``After a task with a cycle range is completed, the measure scales up in a reasonable amount`` () =
+            let task = (task |> Task.setCycleRange (Between (CycleTime.parse "1 month", CycleTime.parse "2 months")) |> Task.setCompleted [dt 2020 4 15])
+            let one =
+                measure (dt 2020 4 27) task
+            let two =
+                measure (dt 2020 5 1) task
+            let three =
+                measure (dt 2020 5 10) task
+            let four =
+                measure (dt 2020 5 20) task
+            let five =
+                measure (dt 2020 5 26) task
+            let six =
+                measure (dt 2020 5 28) task
+            let seven =
+                measure (dt 2020 6 1) task
+                
+            one |> should equal Measure.Suppress
+            seven |> should equal Measure.Force
+            
+            [two; three; four; five; six] |> List.map measured |> should be ascending
+            
+            two |> measured |> should be (lessThan 1.5)
+            six |> measured |> should be (greaterThan 10)
         
             

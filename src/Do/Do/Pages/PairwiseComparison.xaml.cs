@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Navigation;
 using Do.Commands;
 using Do.ViewModels;
@@ -14,7 +15,7 @@ using Tasks;
 
 namespace Do.Pages
 {
-    public partial class PairwiseComparison : PageFunction<PairwiseComparisonResponse>
+    public partial class PairwiseComparison : UserControl
     {
         private readonly List<string> _measures = new List<string>
         {
@@ -23,35 +24,19 @@ namespace Do.Pages
         };
         
         private readonly Duty.T _duty;
+        private readonly Action _callback;
 
         private PairwiseComparisonViewModel Context;
 
-        public PairwiseComparison(Duty.T duty, IEnumerable<Task.T> lowConfidenceTasks)
+        public PairwiseComparison(Duty.T duty, IEnumerable<Task.T> lowConfidenceTasks, Action callback)
         {
             _duty = duty;
+            _callback = callback;
             DataContext = Context = new();
             InitializeComponent();
 
             Context.TaskQueue = lowConfidenceTasks;
             Context.Task = PopTask();
-            SetNextTask();
-            
-            UiCommands.ActionRaised += Action;
-        }
-
-        private void Action(Command action)
-        {
-            switch (action)
-            {
-                case Command.LeftMajor:
-                case Command.LeftMinor:
-                    TakeLeft();
-                    break;
-                case Command.RightMajor:
-                case Command.RightMinor:
-                    TakeRight();
-                    break;
-            }
         }
 
         private Task.T PopTask()
@@ -102,7 +87,7 @@ namespace Do.Pages
             }
             else
             {
-                OnReturn(new ReturnEventArgs<PairwiseComparisonResponse>(new PairwiseComparisonResponse()));
+                _callback();
             }
 
 
@@ -158,7 +143,6 @@ namespace Do.Pages
         private Option<Task.T> GetNextComparisonTask() 
             => _duty.api.comparisonOperand(Context.Task, ComparisonType, ComparisonLower, ComparisonUpper);
 
-        private void Left_OnClick(object sender, RoutedEventArgs e) => TakeLeft();
         private void TakeLeft()
         {
             var value = _duty.api.comparisonValue(Context.ComparisonTask, ComparisonType);
@@ -167,7 +151,6 @@ namespace Do.Pages
             SetNextComparison();
         }
 
-        private void Right_OnClick(object sender, RoutedEventArgs e) => TakeRight();
         private void TakeRight()
         {
             var value = _duty.api.comparisonValue(Context.ComparisonTask, ComparisonType);
@@ -176,13 +159,20 @@ namespace Do.Pages
             SetNextComparison();
         }
 
-        private void PairwiseComparison_OnUnloaded(object sender, RoutedEventArgs e)
+        private void OnLeft(object sender, ExecutedRoutedEventArgs e)
         {
-            UiCommands.ActionRaised -= Action;
+            TakeLeft();
         }
-    }
 
-    public class PairwiseComparisonResponse
-    {
+        private void OnRight(object sender, ExecutedRoutedEventArgs e)
+        {
+            TakeRight();
+        }
+
+        private void PairwiseComparison_OnLoaded(object sender, RoutedEventArgs e)
+        {
+            Focus();
+            SetNextTask();
+        }
     }
 }

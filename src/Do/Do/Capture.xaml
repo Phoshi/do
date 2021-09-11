@@ -1,20 +1,20 @@
-﻿<Window x:Class="Do.Review"
+﻿<Window x:Class="Do.Capture"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:commands="clr-namespace:Do.Commands"
+        xmlns:local="clr-namespace:Do"
         mc:Ignorable="d"
-        Title="Review" Height="450" Width="800"
-        ResizeMode="CanMinimize"
-        WindowStyle="None"
-        AllowsTransparency="True"
+        ShowInTaskbar="False"
+        ResizeMode="NoResize"
         Background="Transparent"
-        Loaded="Review_OnLoaded"
-        Closed="Review_OnClosed"
-        >
-    
-    
+        AllowsTransparency="True"
+        WindowStyle="None"
+        Loaded="Capture_OnLoaded"
+        KeyDown="Capture_OnKeyDown"
+        Topmost="True"
+        Title="Capture" Height="450" Width="800">
+        
     <Border
         BorderThickness="0"
         Padding="4 4 0 0"
@@ -26,13 +26,11 @@
                 Background="Aqua"
                 CornerRadius="30 0 0 0"
             />
-            <ContentControl 
-                Name="_main" 
-                >
+        <ContentControl Name="Content" FocusManager.IsFocusScope="False">
                 <ContentControl.OpacityMask>
                     <VisualBrush Visual="{Binding ElementName=mask}"/>
                 </ContentControl.OpacityMask>
             </ContentControl>
-        </Grid>
+            </Grid>
     </Border>
 </Window>

@@ -9,10 +9,11 @@
       <Compile Include="ReviewSelection.fs" />
       <Compile Include="Alert.fs" />
       <Compile Include="Duty.fs" />
+      <Compile Include="ApplicationConfiguration.fs" />
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Duties\Duties.fsproj" />
+      <ProjectReference Include="..\MarkdownSource\MarkdownSource.csproj" />
       <ProjectReference Include="..\Tasks\Tasks.fsproj" />
     </ItemGroup>
 

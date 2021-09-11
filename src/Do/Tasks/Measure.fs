@@ -1,9 +1,13 @@
 ﻿module Tasks.Measure
 
+open System
 open NUnit.Framework
 
 type Measurement =
+    MeasurementResult * string
+and MeasurementResult =
     | Suppress
+    | Neutral
     | Measurement of double
     | Force
     
@@ -11,10 +15,17 @@ let tendTowardsForce (rangeSize: double) (factor: double) =
     if factor <= 0.0 then
         Force
     else
-        let ratioThroughRange = factor / rangeSize
-        Measurement.Measurement (1.0/ratioThroughRange)
+        let ratioThroughRange = 1.0 + ((rangeSize - factor) / rangeSize)
+        MeasurementResult.Measurement (Math.Pow(ratioThroughRange, 5.0))
 
-let neutral = Measurement 1.0
+let neutral = Neutral
+
+let result ((result, _): Measurement) = result
+
+let stringify (r, d) =
+    sprintf "%s: %A" d r
+
+let create result description: Measurement = (result, description)
 
 type T = Task.T -> Measurement
 

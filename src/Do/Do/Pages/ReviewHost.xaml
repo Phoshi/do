@@ -1,4 +1,4 @@
-﻿<Page x:Class="Do.Pages.ReviewHost"
+﻿<UserControl x:Class="Do.Pages.ReviewHost"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -6,10 +6,13 @@
       xmlns:local="clr-namespace:Do.Pages"
       xmlns:markdig="clr-namespace:Markdig.Wpf;assembly=Markdig.Wpf"
       xmlns:commands="clr-namespace:Do.Commands"
-      FocusManager.IsFocusScope="False"
       mc:Ignorable="d"
-      Title="ReviewHost">
+      Padding="20"
+      Background="#2E3440"
+      Foreground="#D8DEE9"
+      >
     <FrameworkElement.CommandBindings>
         <CommandBinding Command="{x:Static markdig:Commands.Hyperlink}" Executed="OpenHyperlink"></CommandBinding>
     </FrameworkElement.CommandBindings>
-</Page>
+    <ContentControl Name="Content"/>
+</UserControl>

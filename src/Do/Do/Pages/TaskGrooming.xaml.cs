@@ -13,13 +13,14 @@ using Tasks;
 
 namespace Do.Pages
 {
-    public partial class TaskGrooming : PageFunction<GroomingResponse>
+    public partial class TaskGrooming : UserControl
     {
+        private readonly Action _callback;
         private GroomingViewModel Context { get; }
-        public TaskGrooming(Duty.T duty, IEnumerable<Task.T> tasks)
+        public TaskGrooming(Duty.T duty, IEnumerable<Task.T> tasks, Action callback)
         {
+            _callback = callback;
             DataContext = Context = new();
-            InitializeComponent();
             
             Context.Duty = duty;
             
@@ -27,10 +28,18 @@ namespace Do.Pages
             Context.Tasks = contextTasks;
             Context.TaskQueue = contextTasks.Skip(1).ToList();
             Context.CurrentTask = contextTasks.First();
+            
+            InitializeComponent();
+        }
 
-            TaskControl.Focus();
-
-            UiCommands.ActionRaised += Action;
+        private void AssignRequiredTasks()
+        {
+            var assignedTasks = Context.Duty.api.assignedTasks(Context.Tasks);
+            foreach (var task in assignedTasks)
+            {
+                var t = Task.setConfidence(Confidence.full("assigned"), task);
+                Context.Duty.api.update(t, DateTime.Now);
+            }
         }
 
         private void NextTask()
@@ -43,14 +52,9 @@ namespace Do.Pages
             }
             else
             {
-                var assignedTasks = Context.Duty.api.assignedTasks(Context.Tasks);
-                foreach (var task in assignedTasks)
-                {
-                    var t = Task.setConfidence(Confidence.full("assigned"), task);
-                    Context.Duty.api.update(t, DateTime.Now);
-                    
-                }
-                this.OnReturn(new ReturnEventArgs<GroomingResponse>(new GroomingResponse()));
+                AssignRequiredTasks();
+
+                _callback();
             }
         }
         
@@ -65,32 +69,29 @@ namespace Do.Pages
             NextTask();
         }
 
-        private void Action(Command name)
+        private void TaskGrooming_OnLoaded(object sender, RoutedEventArgs e)
         {
-            switch (name)
-            {
-                case Command.LeftMajor:
-                    ScaleTaskAndContinue(0.3);
-                    return;
-                case Command.LeftMinor:
-                    ScaleTaskAndContinue(0.9);
-                    return;
-                case Command.RightMinor:
-                    ScaleTaskAndContinue(1.1);
-                    return;
-                case Command.RightMajor:
-                    ScaleTaskAndContinue(1.5);
-                    return;
-            }
+            Focus();
         }
 
-        private void TaskGrooming_OnUnloaded(object sender, RoutedEventArgs e)
+        private void OnLeftMajor(object sender, ExecutedRoutedEventArgs e)
         {
-            UiCommands.ActionRaised -= Action;
+            ScaleTaskAndContinue(0.5);
         }
-    }
 
-    public class GroomingResponse
-    {
+        private void OnLeftMinor(object sender, ExecutedRoutedEventArgs e)
+        {
+            ScaleTaskAndContinue(0.95);
+        }
+
+        private void OnRightMinor(object sender, ExecutedRoutedEventArgs e)
+        {
+            ScaleTaskAndContinue(1.0);
+        }
+
+        private void OnRightMajor(object sender, ExecutedRoutedEventArgs e)
+        {
+            ScaleTaskAndContinue(1.5);
+        }
     }
 }

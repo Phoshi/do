@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Linq;
 using Markdig;
 using Markdig.Extensions.Yaml;
@@ -26,15 +27,16 @@ namespace MarkdownSource
                 .IgnoreUnmatchedProperties()
                 .Build();
         
-        public Task.T Task(string path, string title, DateTime created, string markdown)
+        public Task.T Task(string pathRoot, string path, string title, DateTime created, string markdown)
         {
+            var relativePath = Path.GetRelativePath(pathRoot, path);
             var doc = Markdown.Parse(markdown, Pipeline);
 
             var frontmatter = doc.Descendants<YamlFrontMatterBlock>().FirstOrDefault();
 
             if (frontmatter == null)
             {
-                return Tasks.Task.createSimple(path, title, markdown, created);
+                return Tasks.Task.createSimple(relativePath, title, markdown, created);
             }
 
             var yaml =
@@ -52,8 +54,8 @@ namespace MarkdownSource
             var description = markdown.Split("---", 3, StringSplitOptions.RemoveEmptyEntries).Last().Trim();
             
             return Tasks.Task.create(
-                path,
-                title,
+                relativePath,
+                parsedYaml.Title ?? title,
                 description,
                 ListModule.OfSeq(parsedYaml.Tags ?? Enumerable.Empty<string>()),
                 parsedYaml.Created ?? created,
@@ -120,7 +122,7 @@ namespace MarkdownSource
         [Test]
         public void SimpleTasksParse()
         {
-            var task = Loader().Task("file.md", "Test task", new DateTime(2020, 5, 5), "Simple task!");
+            var task = Loader().Task("", "file.md", "Test task", new DateTime(2020, 5, 5), "Simple task!");
 
             Assert.That(task,
                 Is.EqualTo(
@@ -135,6 +137,7 @@ namespace MarkdownSource
         public void ComplexTasksParse()
         {
             var task = Loader().Task(
+                "",
                 "file.md",
                 "Test task", 
                 new DateTime(2020, 5, 5), 
@@ -171,6 +174,7 @@ Simple task!");
         public void TasksWithBeforeCyclesParse()
         {
             var task = Loader().Task(
+                "",
                 "file.md",
                 "Test task", 
                 new DateTime(2020, 5, 5), 
@@ -209,6 +213,7 @@ Simple task!");
         public void TasksWithCyclesParse()
         {
             var task = Loader().Task(
+                "",
                 "file.md",
                 "Test task", 
                 new DateTime(2020, 5, 5), 

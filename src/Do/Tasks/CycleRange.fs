@@ -112,6 +112,10 @@ module CycleTime =
             clampWeek lowPrecisionTime
         else lowPrecisionTime
         
+    let toDateTime (duration: T) (dt: DateTime) =
+        let normalisedDateTime = clampToPrecision dt duration
+        add duration normalisedDateTime
+        
     let compare (comparisonBase: DateTime) (comparisonOther: DateTime) (duration: T) =
         let comparisonReference = clampToPrecision comparisonBase duration
         let endOfPeriod = add duration comparisonReference

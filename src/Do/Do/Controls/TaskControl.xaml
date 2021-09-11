@@ -6,34 +6,77 @@
              xmlns:local="clr-namespace:Do.Controls"
              xmlns:viewModels="clr-namespace:Do.ViewModels"
              xmlns:wpf="clr-namespace:Markdig.Wpf;assembly=Markdig.Wpf"
-             mc:Ignorable="d"
-             d:DesignHeight="300" d:DesignWidth="300"
-             Margin="10 10 10 10"
-             Padding="10"
-             BorderBrush="Black"
-             BorderThickness="5">
+             mc:Ignorable="d">
     <Grid x:Name="LayoutRoot" d:DataContext="{d:DesignInstance viewModels:TaskViewModel}">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition/>
-            <ColumnDefinition/>
+            <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
-            <RowDefinition Height="25"/>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="25"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
         
-        <TextBlock Grid.Row="0" Grid.ColumnSpan="2" Text="{Binding Task.title}"/>
+        <TextBlock 
+            Grid.Row="0" 
+            FontSize="24"
+            Foreground="#88C0D0"
+            TextWrapping="Wrap"
+            Text="{Binding Task.title}"/>
         
-        <local:MarkdownView
+        <TextBlock 
+            Name="Weight"
+            Grid.Row="1" 
+            Foreground="#D8DEE9"
+            TextWrapping="Wrap"
+            />
+        
+        <local:MarkdownView 
                             Grid.Column="0"
-                            Grid.ColumnSpan="2"
-                            Grid.Row="1"
-                            x:Name="Descriptor" 
+                            Grid.Row="2"
                             Markdown="{Binding Task.description}" 
                             Focusable="False"
                             ScrollViewer.VerticalScrollBarVisibility="Disabled"/>
+        <Grid Grid.Row="3" Grid.Column="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <TextBlock 
+                VerticalAlignment="Center"
+                Padding="2"
+                Grid.Column="0"
+                Name="Due"
+                Foreground="#BF616A"
+                FontWeight="Bold"
+                TextWrapping="Wrap"
+                />
+            <ListView
+                Grid.Column="1"
+                Background="Transparent"
+                BorderBrush="Transparent"
+                Foreground="#5E81AC"
+                Name="Tags"
+                Padding="0"
+                Margin="0"
+                VerticalAlignment="Center"
+                ItemsSource="{Binding Task.tags}">
+                <ListView.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <WrapPanel/>
+                    </ItemsPanelTemplate>
+                </ListView.ItemsPanel>
+            </ListView>
+            <TextBlock 
+                Grid.Column="2"
+                Name="Completions"
+                VerticalAlignment="Center"
+                Foreground="#4C566A"
+                TextWrapping="Wrap"
+                />
+        </Grid>
         
-        <TextBlock Grid.Row="2" Grid.Column="0" Name="Weight"/>
     </Grid>
 </UserControl>

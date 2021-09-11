@@ -6,6 +6,7 @@ namespace MarkdownSource
 {
     public class TaskMetadata
     {
+        public string Title { get; set; }
         public IEnumerable<string> Tags { get; set; }
         public double? Importance { get; set; }
         public double? Urgency { get; set; }

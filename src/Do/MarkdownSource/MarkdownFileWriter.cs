@@ -31,6 +31,7 @@ namespace MarkdownSource
         {
             var meta = new TaskMetadata
             {
+                Title = task.title,
                 Completed = task.completed,
                 Created = task.created,
                 LastUpdated = task.lastUpdated,

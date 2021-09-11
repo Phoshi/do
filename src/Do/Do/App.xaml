@@ -4,6 +4,13 @@
              xmlns:local="clr-namespace:Do"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
+        <Style TargetType="Button">
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Background" Value="#5E81AC" />
+            <Setter Property="Foreground" Value="#ECEFF4" />
+            <Setter Property="Padding" Value="5 5 5 5" />
+            <Setter Property="Margin" Value="5 5 5 5" />
+        </Style>
          
     </Application.Resources>
 </Application>

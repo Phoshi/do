@@ -9,7 +9,7 @@ let select (weight: Task.T -> Weight.T) seed (n: int) (options: Task.T list): Ta
     let rec _pickTaskAt (w: double) (tasks: (Task.T * Weight.T) list) =
         let ((headTask, headWeight), tail) = (List.head tasks, List.tail tasks)
         
-        let newWeight = w - (match headWeight with
+        let newWeight = w - (match headWeight |> Weight.result with
                              | Weight.Weight n -> n
                              | Weight.Minimum -> 0.
                              | Weight.Maximum -> w)
@@ -22,7 +22,7 @@ let select (weight: Task.T -> Weight.T) seed (n: int) (options: Task.T list): Ta
         
         
     let _select (rng: Random) (tasks: (Task.T * Weight.T) list) =
-        match tasks |> List.tryFind (fun (_, w) -> w = Weight.max) with
+        match tasks |> List.tryFind (fun (_, w) -> (Weight.result w) = Weight.max) with
         | Some (essentialTask, _) -> essentialTask
         | None ->
             let weights = tasks |> List.map snd
@@ -36,11 +36,11 @@ let select (weight: Task.T -> Weight.T) seed (n: int) (options: Task.T list): Ta
             
     let forcedTasksPresent (tasks: (Task.T * Weight.T) list) =
         tasks
-        |> List.exists (fun (_,w) -> w = Weight.max)
+        |> List.exists (fun (_,w) -> (Weight.result w) = Weight.max)
         
     let availableTasksPresent (tasks: (Task.T * Weight.T) list) =
         tasks
-        |> List.exists (fun (_,w) -> not (w = Weight.min))
+        |> List.exists (fun (_,w) -> not ((Weight.result w) = Weight.min))
             
         
     let mutable weightedTasks =
@@ -66,9 +66,9 @@ module Tests =
     let t weight = tc weight |> Task.setDescription (rng.Next().ToString())
     let genericTaskForced () = tf |> Task.setDescription (rng.Next().ToString())
     let w (task: Task.T) =
-        if task.title = "force" then Weight.Maximum
-        else if task.title = "suppress" then Weight.Minimum
-        else Weight.Weight (Double.Parse(task.title))
+        if task.title = "force" then (Weight.create Weight.Maximum [])
+        else if task.title = "suppress" then (Weight.create Weight.Minimum [])
+        else Weight.create (Weight.Weight (Double.Parse(task.title))) []
     
     [<TestFixture>]
     type ``Given a series of weighted tasks`` () =

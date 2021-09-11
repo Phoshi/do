@@ -15,6 +15,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using Do.Core;
+using Do.Extensions;
 using Duties;
 using MarkdownSource;
 using Microsoft.FSharp.Collections;
@@ -31,7 +32,8 @@ namespace Do
     public partial class MainWindow : Window
     {
         private const int SHOW_REVIEW_ID = 1;
-        private Notifier _notifier;
+        private const int SHOW_CAPTURE_ID = 2;
+        private static Notifier _notifier;
 
         public MainWindow()
         {
@@ -40,11 +42,11 @@ namespace Do
 
         private void ButtonBase_OnClick(object sender, RoutedEventArgs e)
         {
-            BeginReview();
+            ToggleReview();
         }
 
         private static Review _review;
-        private static void BeginReview()
+        public static void ToggleReview()
         {
             if (_review == null || !_review.IsLoaded)
             {
@@ -55,6 +57,8 @@ namespace Do
                         var review = new Review(duty);
                         review.Show();
                         review.Focus();
+                        review.Activate();
+                        review.GlobalActivate();
 
                         _review = review;
                     });
@@ -63,13 +67,46 @@ namespace Do
 
             if (_review.IsVisible)
             {
-                _review.Hide();
+                _review.Close();
             }
             else
             {
                 _review.Show();
                 _review.Focus();
+                _review.GlobalActivate();
             }
+        }
+        
+        private static Capture _capture;
+        public static void ToggleCapture()
+        {
+            if (_capture == null || !_capture.IsLoaded)
+            {
+                var capture = new Capture(Config.Active.DefaultDuty());
+                capture.Show();
+                capture.Focus();
+                capture.GlobalActivate();
+
+                _capture = capture;
+                return;
+            }
+
+            if (_capture.IsVisible)
+            {
+                _capture.Close();
+            }
+            else
+            {
+                _capture.Show();
+                _capture.Focus();
+                _capture.Activate();
+                _capture.GlobalActivate();
+            }
+        }
+
+        public static void BumpNotifier()
+        {
+            _notifier.CheckNotificationStatus();
         }
 
         // DLL libraries used to manage hotkeys
@@ -83,7 +120,19 @@ namespace Do
         {
             if (msg == 0x0312)
             {
-                BeginReview();
+                if (wParam.ToInt32() == SHOW_REVIEW_ID)
+                    ToggleReview();
+                if (wParam.ToInt32() == SHOW_CAPTURE_ID)
+                {
+                    if (_review?.IsVisible ?? false)
+                    {
+                        ToggleReview();
+                    }
+                    else
+                    {
+                        ToggleCapture();
+                    }
+                }
             }
 
             return IntPtr.Zero;
@@ -106,10 +155,13 @@ namespace Do
                 throw new Exception("Could not create hWnd source from window.");
             source.AddHook(WndProc);
 
-            RegisterHotKey(new WindowInteropHelper(this).Handle, SHOW_REVIEW_ID, (int) (Modifiers.Ctrl | Modifiers.Alt),
+            RegisterHotKey(new WindowInteropHelper(this).Handle, SHOW_CAPTURE_ID, (int) (Modifiers.Ctrl | Modifiers.Alt),
                 0x44 /*D*/);
+            
+            RegisterHotKey(new WindowInteropHelper(this).Handle, SHOW_CAPTURE_ID, (int) (Modifiers.NoMod),
+                0x81 /*F18*/);
 
-            _notifier = new Notifier(Config.Active.ActiveDuties(), BeginReview);
+            _notifier = new Notifier(Config.Active.ActiveDuties(), ToggleReview);
             _notifier.Notify();
 
             Visibility = Visibility.Hidden;

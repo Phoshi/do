@@ -4,6 +4,8 @@ open System
 open Tasks
 open Tasks.RelevanceRange
 
+let name = "relevance"
+
 let measure (now: DateTime) (task: Task.T) =
     if (List.isEmpty task.completed) then
         match task.relevanceRange with
@@ -21,7 +23,7 @@ let measure (now: DateTime) (task: Task.T) =
             
             Measure.tendTowardsForce range timeRemaining
         | Between (lower, upper) ->
-            if (lower < now) then
+            if (lower <= now) then
                 let range =
                     (upper - lower).Ticks |> double
                 let timeRemaining =
@@ -65,9 +67,9 @@ module Tests =
             |> should equal Measure.Force
             
         [<Test>]
-        member x.``When we are before the deadline, then the measure is neutral`` () =
+        member x.``When we are before the deadline, then the measure is not suppressive`` () =
             measure now (task |> Task.setRelevanceRange (RelevanceRange.Before (dt 2020 5 6)))
-            |> should equal Measure.neutral
+            |> should equal (Measure.Measurement 1.0)
             
         [<Test>]
         member x.``When we are before the range, then the measure is suppressive`` () =
@@ -83,6 +85,18 @@ module Tests =
                 
             two > one
             |> should be True
+            
+        [<Test>]
+        member x.``The scaling up over time should be appropriately gradual over a week`` () =
+            let on n =
+                measure n (task |> Task.setRelevanceRange (RelevanceRange.Between (dt 2020 5 3, dt 2020 5 10)))
+                
+            on (dt 2020 5 2) |> should equal Measure.Suppress
+            on (dt 2020 5 3) |> should lessThan (Measure.Measurement 1.1)
+            on (dt 2020 5 5) |> should greaterThan (Measure.Measurement 2.0)
+            on (dt 2020 5 7) |> should greaterThan (Measure.Measurement 4.0)
+            on (dt 2020 5 9) |> should greaterThan (Measure.Measurement 6.0)
+            on (dt 2020 5 11) |> should equal Measure.Force
             
         [<Test>]
         member x.``When we are after the range, then the measure is forceful`` () =

@@ -31,5 +31,7 @@
     &lt;TestId&gt;NUnit3x::5AE7941A-275E-44C0-B9F3-E3A8494041F3::net5.0::Tasks.CycleRange+Tests+Given two times and a range.If the supplied time is before the reference time plus the range, the comparison is before&lt;/TestId&gt;&#xD;
     &lt;TestId&gt;NUnit3x::5AE7941A-275E-44C0-B9F3-E3A8494041F3::net5.0::Tasks.CycleRange+Tests+Given two times and a range.If the supplied time is within the same precision as the reference time plus the range, the comparison is on&lt;/TestId&gt;&#xD;
     &lt;TestId&gt;NUnit3x::5AE7941A-275E-44C0-B9F3-E3A8494041F3::net5.0::Tasks.CycleRange+Tests+Given two times and a range&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;NUnit3x::612163B5-E707-4814-8F90-FEAC3BBFBACC::net5.0::Do.Core.Alert+Tests+Given tasks which may have lapsed review periods.If no review periods are supplied then no periods have lapsed&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;NUnit3x::612163B5-E707-4814-8F90-FEAC3BBFBACC::net5.0::Do.Core.Alert+Tests+Given tasks which may have lapsed review periods&lt;/TestId&gt;&#xD;
   &lt;/TestAncestor&gt;&#xD;
 &lt;/SessionState&gt;</s:String></wpf:ResourceDictionary>
